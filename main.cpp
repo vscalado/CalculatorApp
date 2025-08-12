@@ -1,4 +1,4 @@
-#TEste
+
 #include <QApplication>
 #include "UI/MainWindow.h"
 
