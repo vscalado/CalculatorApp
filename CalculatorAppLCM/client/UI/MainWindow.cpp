@@ -1,22 +1,26 @@
 #include "MainWindow.h"
-#include "../LCM/client.cpp"
+#include "../LCM/client.hpp"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QString>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent) {
+    : QMainWindow(parent)
+{
     setupUI();
 
     resultCallback = [this](const messages::Result& msg) {
-        onResultReceived(msg.value, QString::fromStdString(msg.status));
-        logMessage("Received result: " + QString::number(msg.value) + " (" + QString::fromStdString(msg.status) + ")");
+        QMetaObject::invokeMethod(this, [this, msg] {
+            onResultReceived(msg.value, QString::fromStdString(msg.status));
+            logMessage("Received result: " + QString::number(msg.value) + " (" + QString::fromStdString(msg.status) + ")");
+        }, Qt::QueuedConnection);
     };
 }
 
 MainWindow::~MainWindow() {}
 
-void MainWindow::setupUI() {
+void MainWindow::setupUI()
+{
     QWidget *central = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout;
 
@@ -61,24 +65,28 @@ void MainWindow::setupUI() {
     connect(subButton, &QPushButton::clicked, this, &MainWindow::onSubClicked);
 }
 
-void MainWindow::onAddClicked() {
+void MainWindow::onAddClicked()
+{
     double a = inputA->text().toDouble();
     double b = inputB->text().toDouble();
     sendOperation("add", a, b);
     logMessage("Sent add: " + QString::number(a) + ", " + QString::number(b));
 }
 
-void MainWindow::onSubClicked() {
+void MainWindow::onSubClicked()
+{
     double a = inputA->text().toDouble();
     double b = inputB->text().toDouble();
     sendOperation("sub", a, b);
     logMessage("Sent sub: " + QString::number(a) + ", " + QString::number(b));
 }
 
-void MainWindow::onResultReceived(double value, const QString& status) {
+void MainWindow::onResultReceived(double value, const QString &status)
+{
     resultDisplay->setText("Resultado: " + QString::number(value) + " (" + status + ")");
 }
 
-void MainWindow::logMessage(const QString& msg) {
+void MainWindow::logMessage(const QString &msg)
+{
     monitorDisplay->append(msg);
 }

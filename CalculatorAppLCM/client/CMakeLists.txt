@@ -1,6 +1,7 @@
 add_executable(CalculatorApp
     main.cpp
     UI/MainWindow.cpp
+    LCM/client.cpp
 )
 
 target_include_directories(CalculatorApp PRIVATE
